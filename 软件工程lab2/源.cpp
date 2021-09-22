@@ -5,13 +5,19 @@
 #include <vector>
 #include <sstream>
 using namespace std;
-/*author      why
-  MU  number  19104723
-  FZU number 831901330
+/*
+author      why
+MU  number  19104723
+FZU number  831901330
+environment vitual studio 2019
 */
 
 
 int main() {
+	string keyword_set[32] = { "auto", "break", "case", "char", "const", "continue", "default", "do", "double",
+							  "else", "enum", "extern", "float", "for", "goto", "if", "int", "long", "register",
+								"return", "short", "signed", "sizeof", "static", "struct", "switch", "typedef", "union",
+								"unsigned", "void", "volatile", "while" };
 	string name;
 	ifstream cpp_file;
 	vector<string>keywords;
@@ -20,16 +26,16 @@ int main() {
 	cout << "please enter your file position and name: ";
 	getline(cin, name);
 	cpp_file.open(name);
-	
-	
+
+	int keywords_num = 0;
 	while (!cpp_file.eof()) {
 		getline(cpp_file, code_line);
 		int keychar_i = 0;
 		while (keychar_i < code_line.length()) {
 			if (!((code_line[keychar_i] >= 'a' && code_line[keychar_i] <= 'z') ||
 				(code_line[keychar_i] >= 'A' && code_line[keychar_i] <= 'Z') ||
-				code_line[keychar_i] == '.' || code_line[keychar_i] == '_'||
-				code_line[keychar_i] == '{' || code_line[keychar_i] == '}')) {
+				code_line[keychar_i] == '.' || code_line[keychar_i] == '_' ||
+				code_line[keychar_i] == '{' || code_line[keychar_i] == '}' || code_line[keychar_i] == '\"')) {
 				code_line[keychar_i] = ' ';
 			}
 			else if (code_line[keychar_i] == '{') {
@@ -41,14 +47,24 @@ int main() {
 		}
 
 
-		code_line.append(" ;");
+		code_line.append(" ; ");
 		istringstream keyword_input(code_line);
 		string word;
 		string word2;
 		while (keyword_input >> word) {
+			for (int i = 0; i < 32; i++) {
+				if (keyword_set[i] == word) {
+					keywords_num++;
+				}
+			}
 			word2 = "";
 			if (word == "else") {
 				keyword_input >> word2;
+				for (int i = 0; i < 32; i++) {
+					if (keyword_set[i] == word2) {
+						keywords_num++;
+					}
+				}
 				if (word2 == "if") {
 					word = word + word2;
 					keywords.push_back(word);
@@ -72,13 +88,15 @@ int main() {
 	int keyword_i = 0;
 	while (keyword_i < keywords_length) {
 		if (keywords[keyword_i] == "int" || keywords[keyword_i] == "double" ||
-			keywords[keyword_i] == "long") {
+			keywords[keyword_i] == "long" || keywords[keyword_i] == "float" ||
+			keywords[keyword_i] == "short" || keywords[keyword_i] == "unsigned" ||
+			keywords[keyword_i] == "char") {
 			keyword_i++;
 			while (keywords[keyword_i] != ";") {
 				string del_word = keywords[keyword_i];
 				if (del_word == "main" || del_word == "{") {
 					keyword_i++;
-					continue; 
+					continue;
 				}
 				int del_i = 0;
 				while (del_i < keywords_length) {
@@ -103,22 +121,12 @@ int main() {
 			keywords.erase(begin(keywords) + del_i);
 			keywords_length--;
 		}
-		else { 
+		else {
 			del_i++;
 		}
 	}
-		
 
-	int keywords_num = 0;
-	keyword_i = 0;
-	while (keyword_i < keywords_length) {
-		if (keywords[keyword_i] != "{" && keywords[keyword_i] != "}") {
-			keywords_num++;
-		}
-		keyword_i++;
-	}
 
-	
 	int num_floor = -1;
 	vector<int>switch_floor;
 	int case_length = 0;
@@ -139,11 +147,11 @@ int main() {
 				case_num_vector.push_back(switch_floor[num_floor]);
 				case_length++;
 			}
-			
+
 			if (if_floor[num_floor] == -1) {
 				if_elseif_num++;
 			}
-			
+
 			if (if_floor[num_floor] == 1) {
 				if_else_num++;
 			}
@@ -151,7 +159,7 @@ int main() {
 			if_floor.erase(begin(if_floor) + num_floor);
 			num_floor--;
 		}
-		else if(keywords[keyword_i] == "switch") {
+		else if (keywords[keyword_i] == "switch") {
 			switch_num++;
 		}
 		else if (keywords[keyword_i] == "case") {
@@ -165,7 +173,7 @@ int main() {
 				if_floor[num_floor] = 1;
 			}
 		}
-			
+
 		keyword_i++;
 	}
 
@@ -177,5 +185,6 @@ int main() {
 	}
 	cout << "\nif else num:" << if_else_num;
 	cout << "\nif elseif num: " << if_elseif_num;
+	cpp_file.close();
 	return 0;
 }
