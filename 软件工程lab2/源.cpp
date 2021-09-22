@@ -22,13 +22,15 @@ int main() {
 	ifstream cpp_file;
 	vector<string>keywords;
 	int keywords_length = 0;
+	int keywords_num = 0;
 	string code_line = "";
 	cout << "please enter your file position and name: ";
 	getline(cin, name);
-	cpp_file.open(name);
+	cpp_file.open(name);//Enter data from files
 
-	int keywords_num = 0;
-	while (!cpp_file.eof()) {
+
+	
+	while (!cpp_file.eof()) {//Except for letters and some characters, all characters are replaced with Spaces
 		getline(cpp_file, code_line);
 		int keychar_i = 0;
 		while (keychar_i < code_line.length()) {
@@ -44,12 +46,12 @@ int main() {
 				keychar_i++;
 			}
 			keychar_i++;
+			
 		}
-
-
-		code_line.append(" ; ");
-		istringstream keyword_input(code_line);
-		string word;
+		
+									// Compare the keyword database one by one and calculate the number of keywords.
+		istringstream keyword_input(code_line);// Synthesize elseif into a single word for later.
+		string word;                           // Use sstream to split words
 		string word2;
 		while (keyword_input >> word) {
 			for (int i = 0; i < 32; i++) {
@@ -85,49 +87,7 @@ int main() {
 	}
 
 
-	int keyword_i = 0;
-	while (keyword_i < keywords_length) {
-		if (keywords[keyword_i] == "int" || keywords[keyword_i] == "double" ||
-			keywords[keyword_i] == "long" || keywords[keyword_i] == "float" ||
-			keywords[keyword_i] == "short" || keywords[keyword_i] == "unsigned" ||
-			keywords[keyword_i] == "char") {
-			keyword_i++;
-			while (keywords[keyword_i] != ";") {
-				string del_word = keywords[keyword_i];
-				if (del_word == "main" || del_word == "{") {
-					keyword_i++;
-					continue;
-				}
-				int del_i = 0;
-				while (del_i < keywords_length) {
-					if (keywords[del_i] == del_word) {
-						keywords.erase(begin(keywords) + del_i);
-						keywords_length--;
-					}
-					else {
-						del_i++;
-					}
-				}
-			}
-		}
-		keyword_i++;
-	}
-
-
-
-	int del_i = 0;
-	while (del_i < keywords_length) {
-		if (keywords[del_i] == ";") {
-			keywords.erase(begin(keywords) + del_i);
-			keywords_length--;
-		}
-		else {
-			del_i++;
-		}
-	}
-
-
-	int num_floor = -1;
+	int num_floor = -1; //Count if else Switch case using curly brace layers
 	vector<int>switch_floor;
 	int case_length = 0;
 	int switch_num = 0;
@@ -135,7 +95,7 @@ int main() {
 	vector<int>if_floor;
 	int if_elseif_num = 0;
 	vector<int>case_num_vector;
-	keyword_i = 0;
+	int keyword_i = 0;
 	while (keyword_i < keywords_length) {
 		if (keywords[keyword_i] == "{") {
 			num_floor++;
@@ -178,7 +138,7 @@ int main() {
 	}
 
 
-	cout << "keywords_num is " << keywords_num;
+	cout << "keywords_num is " << keywords_num;//cout final answer
 	cout << "\nswitch num: " << switch_num << "\ncase num: ";
 	for (int n = 0; n < case_length; n++) {
 		cout << case_num_vector[n] << " ";
