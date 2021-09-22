@@ -1,5 +1,5 @@
 #include <stdio.h>
-int mai() {
+int main() {
     int i = 1;
     double j = 0;
     long f;

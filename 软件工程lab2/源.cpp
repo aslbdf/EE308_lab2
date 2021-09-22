@@ -5,6 +5,11 @@
 #include <vector>
 #include <sstream>
 using namespace std;
+/*author      why
+  MU  number  19104723
+  FZU number 831901330
+*/
+
 
 int main() {
 	string name;
@@ -12,9 +17,9 @@ int main() {
 	vector<string>keywords;
 	int keywords_length = 0;
 	string code_line = "";
-	cout << "please enter your file position: ";
-	//getline(cin, name);
-	cpp_file.open("file.cpp");
+	cout << "please enter your file position and name: ";
+	getline(cin, name);
+	cpp_file.open(name);
 	
 	
 	while (!cpp_file.eof()) {
@@ -28,8 +33,8 @@ int main() {
 				code_line[keychar_i] = ' ';
 			}
 			else if (code_line[keychar_i] == '{') {
-				code_line.insert(keychar_i + 1, " ");
-				code_line.insert(keychar_i - 1, " ");
+				code_line.insert(long long int(keychar_i) + 1, " ");
+				code_line.insert(long long int(keychar_i) - 1, " ");
 				keychar_i++;
 			}
 			keychar_i++;
@@ -41,7 +46,7 @@ int main() {
 		string word;
 		string word2;
 		while (keyword_input >> word) {
-			word2 == "";
+			word2 = "";
 			if (word == "else") {
 				keyword_input >> word2;
 				if (word2 == "if") {
@@ -64,8 +69,6 @@ int main() {
 	}
 
 
-
-
 	int keyword_i = 0;
 	while (keyword_i < keywords_length) {
 		if (keywords[keyword_i] == "int" || keywords[keyword_i] == "double" ||
@@ -73,7 +76,7 @@ int main() {
 			keyword_i++;
 			while (keywords[keyword_i] != ";") {
 				string del_word = keywords[keyword_i];
-				if (del_word == "mai" || del_word == "{") {
+				if (del_word == "main" || del_word == "{") {
 					keyword_i++;
 					continue; 
 				}
@@ -92,6 +95,8 @@ int main() {
 		keyword_i++;
 	}
 
+
+
 	int del_i = 0;
 	while (del_i < keywords_length) {
 		if (keywords[del_i] == ";") {
@@ -103,10 +108,6 @@ int main() {
 		}
 	}
 		
-	for (int n = 0; n < keywords_length; n++) {
-		cout << keywords[n] << '\n';
-	}
-
 
 	int keywords_num = 0;
 	keyword_i = 0;
@@ -116,29 +117,65 @@ int main() {
 		}
 		keyword_i++;
 	}
-	cout << "keywords_num is " << keywords_num;
-	return 0;
+
 	
-	int num_floor = 0;
+	int num_floor = -1;
+	vector<int>switch_floor;
+	int case_length = 0;
 	int switch_num = 0;
 	int if_else_num = 0;
+	vector<int>if_floor;
 	int if_elseif_num = 0;
-	int case_num = 0;
 	vector<int>case_num_vector;
 	keyword_i = 0;
 	while (keyword_i < keywords_length) {
 		if (keywords[keyword_i] == "{") {
 			num_floor++;
+			switch_floor.push_back(0);
+			if_floor.push_back(0);
 		}
 		else if (keywords[keyword_i] == "}") {
+			if (switch_floor[num_floor] != 0) {
+				case_num_vector.push_back(switch_floor[num_floor]);
+				case_length++;
+			}
+			
+			if (if_floor[num_floor] == -1) {
+				if_elseif_num++;
+			}
+			
+			if (if_floor[num_floor] == 1) {
+				if_else_num++;
+			}
+			switch_floor.erase(begin(switch_floor) + num_floor);
+			if_floor.erase(begin(if_floor) + num_floor);
 			num_floor--;
-			case_num_vector.push_back(case_num);
-			if(switch_num)
 		}
-		if (keywords[keyword_i] == "switch") {
+		else if(keywords[keyword_i] == "switch") {
 			switch_num++;
 		}
-		if(keywords[keyword_i] =="case")
+		else if (keywords[keyword_i] == "case") {
+			switch_floor[num_floor]++;
+		}
+		else if (keywords[keyword_i] == "elseif") {
+			if_floor[num_floor] = -1;
+		}
+		else if (keywords[keyword_i] == "else") {
+			if (if_floor[num_floor] == 0) {
+				if_floor[num_floor] = 1;
+			}
+		}
+			
+		keyword_i++;
 	}
 
+
+	cout << "keywords_num is " << keywords_num;
+	cout << "\nswitch num: " << switch_num << "\ncase num: ";
+	for (int n = 0; n < case_length; n++) {
+		cout << case_num_vector[n] << " ";
+	}
+	cout << "\nif else num:" << if_else_num;
+	cout << "\nif elseif num: " << if_elseif_num;
+	return 0;
 }
